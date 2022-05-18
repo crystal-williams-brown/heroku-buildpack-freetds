@@ -87,9 +87,10 @@ configure_app_env_vars() {
   # tiny_tds extconf.rb uses FREETDS_DIR
   # https://github.com/rails-sqlserver/tiny_tds/blob/5046755ca91594003f8b3ca541d136f3ed859973/ext/tiny_tds/extconf.rb#L36-L38
   export FREETDS_DIR="${APP_TARGET_DIR}"
-  export LD_LIBRARY_PATH="${APP_TARGET_DIR}/lib:${LD_LIBRARY_PATH:-/usr/local/lib}"
-  export LD_RUN_PATH="${APP_TARGET_DIR}/lib:${LD_RUN_PATH:-/usr/local/lib}"
-  export LIBRARY_PATH="${APP_TARGET_DIR}/lib:${LIBRARY_PATH:-/usr/local/lib}"
+  export LD_LIBRARY_PATH="${APP_TARGET_DIR}/lib:${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+  export LD_RUN_PATH="${APP_TARGET_DIR}/lib:${LD_RUN_PATH:+:$LD_RUN_PATH}"
+  export LIBRARY_PATH="${APP_TARGET_DIR}/lib:${LIBRARY_PATH:+:$LIBRARY_PATH}"
+
   export SYBASE="${APP_TARGET_DIR}"
 EOF
  chmod +x "${BUILD_DIR}/.profile.d/freetds.sh"
@@ -104,9 +105,9 @@ configure_buildpack_env_vars() {
   # they work for later buildpacks.
   export PATH="${BUILD_TARGET_DIR}/bin:$PATH"
   export FREETDS_DIR="${BUILD_TARGET_DIR}"
-  export LD_LIBRARY_PATH="${BUILD_TARGET_DIR}/lib:${LD_LIBRARY_PATH:-/usr/local/lib}"
-  export LD_RUN_PATH="${BUILD_TARGET_DIR}/lib:${LD_RUN_PATH:-/usr/local/lib}"
-  export LIBRARY_PATH="${BUILD_TARGET_DIR}/lib:${LIBRARY_PATH:-/usr/local/lib}"
+  export LD_LIBRARY_PATH="${BUILD_TARGET_DIR}/lib:${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+  export LD_RUN_PATH="${BUILD_TARGET_DIR}/lib:${LD_RUN_PATH:+:$LD_RUN_PATH}"
+  export LIBRARY_PATH="${BUILD_TARGET_DIR}/lib:${LIBRARY_PATH:+:$LIBRARY_PATH}"
   export SYBASE="${APP_TARGET_DIR}"
   # give environment to later buildpacks
   export | grep -E -e ' (PATH|LD_LIBRARY_PATH|LIBRARY_PATH|FREETDS_DIR|SYBASE)=' > "${LP_DIR}/export"
@@ -189,7 +190,7 @@ main() {
   info "Unpacking cached files..."
   tar xjf "${CACHED_TAR}" -C "${BUILD_TARGET_DIR}" | indent
 
-  # configure_buildpack_env_vars
+  configure_buildpack_env_vars
 
   info "Install of FreeTDS ${FREETDS_VERSION} complete"
 }
