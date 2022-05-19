@@ -74,7 +74,6 @@ mkdir -p "${BUILD_TARGET_DIR}"
 
 # This is the path that will be used at dyno runtime, and in which we build.
 APP_TARGET_DIR="/app/freetds"
-# APP_TARGET_DIR ="\$HOME/freetds/lib:\$HOME"
 mkdir -p "${APP_TARGET_DIR}"
 
 configure_app_env_vars() {
@@ -173,7 +172,7 @@ cache_build_artifacts_for_future_deploys() {
 main() {
   topic "FreeTDS ${FREETDS_VERSION} building in ${BUILD_DIR}"
 
-  # configure_app_env_vars
+  configure_app_env_vars
 
   if [ ! -f "$CACHED_TAR" ]; then
     info "Cached files not found - downloading and unpacking..."
@@ -190,7 +189,7 @@ main() {
   info "Unpacking cached files..."
   tar xjf "${CACHED_TAR}" -C "${BUILD_TARGET_DIR}" | indent
 
-  configure_buildpack_env_vars
+  # configure_buildpack_env_vars
 
   info "Install of FreeTDS ${FREETDS_VERSION} complete"
 }
